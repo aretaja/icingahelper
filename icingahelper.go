@@ -13,10 +13,10 @@ import (
 // Exported part
 
 // Version of release
-const Version = "0.0.1"
+const Version = "1.0.0"
 
 // icingaCheck object
-type icingaCheck struct {
+type IcingaCheck struct {
 	name                 string   // name - first word in final return message.
 	perf                 []string // perf - performance data
 	retVal               int      // retVal - plugin exit value
@@ -30,21 +30,21 @@ type msg struct {
 }
 
 // Initialize new icingaCheck object
-func NewCheck(name string) *icingaCheck {
-	return &icingaCheck{
+func NewCheck(name string) *IcingaCheck {
+	return &IcingaCheck{
 		name:   name,
 		retVal: 3,
 	}
 }
 
 // Get icingaCheck retVal
-func (c *icingaCheck) RetVal() int {
+func (c *IcingaCheck) RetVal() int {
 	return c.retVal
 }
 
 // Check threshold
 //  Returns alarm level (int) and error if any
-func (c *icingaCheck) AlarmLevel(v int64, wa, cr string) (int, error) {
+func (c *IcingaCheck) AlarmLevel(v int64, wa, cr string) (int, error) {
 	level := 3
 	re, _ := regexp.Compile(`^(@)?(?:(-?[0-9]*):)?(?:(-?[0-9]*))$`)
 
@@ -118,25 +118,18 @@ func (c *icingaCheck) AlarmLevel(v int64, wa, cr string) (int, error) {
 
 // Add perormance data
 // unit - "us", "ms", "s", "%", "b", "kb", "mb", "gb", "tb", "c", or the empty string
-// max, min - must be math.MaxInt64, math.MinInt64 accordingly if not defined
-// warn, crit - [[@]<int64>:]<int64>
-//  fe. addPerfData("cpu usage", 20, "%", 0, 100, "80", "90")
-func (c *icingaCheck) AddPerfData(label string, value int64, unit string, min, max int64, warn, crit string) {
-	mins, maxs := "", ""
-	if min != math.MinInt64 {
-		mins = fmt.Sprintf("%d", min)
-	}
-	if max != math.MinInt64 {
-		maxs = fmt.Sprintf("%d", max)
-	}
+// max, min - must be "" if not defined
+// warn, crit - [[@]<int>:]<int>
+//  fe. addPerfData("cpu usage", "20", "%", "0", "100", "80", "90")
+func (c *IcingaCheck) AddPerfData(label, value, unit, warn, crit, min, max string) {
 
-	out := fmt.Sprintf("%s=%d%s;%s;%s;%s;%s", label, value, unit, mins, maxs, warn, crit)
+	out := fmt.Sprintf("%s=%s%s;%s;%s;%s;%s", label, value, unit, warn, crit, min, max)
 
 	c.perf = append(c.perf, out)
 }
 
 // Add to check return message(s)
-func (c *icingaCheck) AddMsg(level int, short, long string) {
+func (c *IcingaCheck) AddMsg(level int, short, long string) {
 	m := msg{
 		short: short,
 		long:  long,
@@ -163,7 +156,7 @@ func (c *icingaCheck) AddMsg(level int, short, long string) {
 }
 
 // Returns plugin output message
-func (c *icingaCheck) FinalMsg() string {
+func (c *IcingaCheck) FinalMsg() string {
 	level := "UNKNOWN"
 
 	switch c.retVal {
@@ -209,9 +202,7 @@ func (c *icingaCheck) FinalMsg() string {
 
 	if c.ok != nil {
 		for _, v := range c.ok {
-			if sm == nil {
-				sm = append(sm, v.short)
-			}
+			sm = append(sm, v.short)
 
 			if v.long != "" {
 				lm = append(lm, fmt.Sprintf("%s(ok)", v.long))
