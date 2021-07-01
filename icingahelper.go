@@ -120,7 +120,7 @@ func (c *IcingaCheck) AlarmLevel(v int64, wa, cr string) (int, error) {
 // unit - "us", "ms", "s", "%", "b", "kb", "mb", "gb", "tb", "c", or the empty string
 // max, min - must be "" if not defined
 // warn, crit - [[@]<int>:]<int>
-//  fe. addPerfData("cpu usage", "20", "%", "0", "100", "80", "90")
+//  fe. AddPerfData("cpu usage", "20", "%", "80", "90", "0", "100")
 func (c *IcingaCheck) AddPerfData(label, value, unit, warn, crit, min, max string) {
 
 	out := fmt.Sprintf("%s=%s%s;%s;%s;%s;%s", label, value, unit, warn, crit, min, max)
