@@ -34,6 +34,21 @@ func TestRetVal(t *testing.T) {
 	}
 }
 
+func TestSetRetVal(t *testing.T) {
+	check := NewCheck("CPU")
+
+	for _, v := range []int{-1, 0, 1, 2, 3, 4} {
+		err := check.SetRetVal(v)
+		if err != nil && v >= 0 && v <= 3 {
+			t.Error("SetRetVal - nil, got ", err)
+		} else if check.RetVal() != v && v >= 0 && v <= 3 {
+			t.Errorf("SetRetVal - set %d, got %d", v, check.RetVal())
+		} else if check.RetVal() == v && v < 0 && v > 3 {
+			t.Errorf("SetRetVal - set %d, got %d", v, check.RetVal())
+		}
+	}
+}
+
 func TestAlarmLevel(t *testing.T) {
 	check := NewCheck("CPU")
 	if r, err := check.AlarmLevel(5, "6", "7"); r != 0 || err != nil {
