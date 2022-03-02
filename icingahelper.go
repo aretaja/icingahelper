@@ -13,7 +13,7 @@ import (
 // Exported part
 
 // Version of release
-const Version = "1.0.1"
+const Version = "1.1.1"
 
 // icingaCheck object
 type IcingaCheck struct {
@@ -42,8 +42,19 @@ func (c *IcingaCheck) RetVal() int {
 	return c.retVal
 }
 
+// Set icingaCheck retVal
+func (c *IcingaCheck) SetRetVal(v int) error {
+	if v < 0 || v > 3 {
+		return fmt.Errorf("not valid return value - %d", v)
+	}
+
+	c.retVal = v
+
+	return nil
+}
+
 // Check threshold
-//  Returns alarm level (int) and error if any
+// Returns alarm level (int) and error if any
 func (c *IcingaCheck) AlarmLevel(v int64, wa, cr string) (int, error) {
 	level := 3
 	re, _ := regexp.Compile(`^(@)?(?:(-?[0-9]*):)?(?:(-?[0-9]*))$`)
